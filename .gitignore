@@ -52,3 +52,14 @@ prompt
 server.log
 # Skills directory
 /skills/
+
+# Non-project directories
+/upload/
+/devicehub/
+/src/app_backup/
+/db/
+/download/
+/.zscripts/
+
+# Worklog
+worklog.md
