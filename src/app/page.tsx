@@ -122,6 +122,10 @@ const CurrencyPage = dynamic(
   () => import('@/app/(dashboard)/currency/page').then(mod => mod.default),
   { ssr: false, loading: () => <LoadingState /> }
 )
+const AgentLogsPage = dynamic(
+  () => import('@/app/(dashboard)/agent-logs/page').then(mod => mod.default),
+  { ssr: false, loading: () => <LoadingState /> }
+)
 
 // Map menu index to page component
 const pageMap: Record<number, ComponentType> = {
@@ -156,7 +160,8 @@ const pageMap: Record<number, ComponentType> = {
   28: PaymentRecordsPage,   // 支付记录
   29: VersionManagementPage, // 版本管理
   30: ScreenMachinesPage,    // 屏幕机管理
-  31: DevicesPage,           // 系统设置 (placeholder)
+  31: AgentLogsPage,          // 代理端日志
+  32: DevicesPage,           // 系统设置 (placeholder)
 }
 
 // Map menu index to URL slug
@@ -192,7 +197,8 @@ const urlMap: Record<number, string> = {
   28: '/payment-records',
   29: '/version-management',
   30: '/screen-machines',
-  31: '/settings',
+  31: '/agent-logs',
+  32: '/settings',
 }
 
 function LoadingState() {
@@ -492,6 +498,7 @@ function Sidebar({ activeIdx, setActiveIdx }: { activeIdx: number; setActiveIdx:
         { icon: PaymentIcon, label: '支付记录' },
         { icon: VersionIcon, label: '版本管理' },
         { icon: ScreenIcon, label: '屏幕机管理' },
+        { icon: ScrollTextIcon, label: '代理端日志' },
       ],
     },
     {
@@ -619,3 +626,4 @@ function AccountIcon(p: React.SVGProps<SVGSVGElement>) { return <svg {...p} fill
 function ModuleIcon(p: React.SVGProps<SVGSVGElement>) { return <svg {...p} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M4 5a1 1 0 011-1h4a1 1 0 011 1v5a1 1 0 01-1 1H5a1 1 0 01-1-1V5zm10 0a1 1 0 011-1h4a1 1 0 011 1v2a1 1 0 01-1 1h-4a1 1 0 01-1-1V5zM4 15a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1H5a1 1 0 01-1-1v-4zm10-2a1 1 0 011-1h4a1 1 0 011 1v6a1 1 0 01-1 1h-4a1 1 0 01-1-1v-6z" /></svg> }
 function CurrencyIcon(p: React.SVGProps<SVGSVGElement>) { return <svg {...p} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg> }
 function SettingsIcon(p: React.SVGProps<SVGSVGElement>) { return <svg {...p} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" /><circle cx="12" cy="12" r="3" /></svg> }
+function ScrollTextIcon(p: React.SVGProps<SVGSVGElement>) { return <svg {...p} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M8 21h12a2 2 0 002-2v-2H10v2a2 2 0 01-2 2zm0 0a2 2 0 01-2-2V5a2 2 0 012-2h12v14" /><path strokeLinecap="round" strokeLinejoin="round" d="M6 3H4a2 2 0 00-2 2v12a2 2 0 002 2h2" /><path strokeLinecap="round" strokeLinejoin="round" d="M12 8h4" /><path strokeLinecap="round" strokeLinejoin="round" d="M12 12h4" /></svg> }
