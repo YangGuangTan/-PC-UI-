@@ -3,6 +3,7 @@
 import { useState, useRef } from 'react'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
+import { Checkbox } from '@/components/ui/checkbox'
 import {
   Select,
   SelectContent,
@@ -36,6 +37,8 @@ import {
   Coins,
   Upload,
   Info,
+  Wallet,
+  CreditCard,
 } from 'lucide-react'
 
 // Mock currency data
@@ -91,6 +94,33 @@ export default function CurrencyPage() {
     freeDays: '',
     withdrawRangeMin: '',
     withdrawRangeMax: '',
+    // 支付设置
+    paymentMethods: {
+      GooglePay: false,
+      ApplePay: false,
+      DebitCard: false,
+      PayPal: false,
+      Alipay: false,
+      AlipayHK: false,
+      AlipayTNG: false,
+      IDEAL: false,
+    },
+    presetData1: '20',
+    presetData2: '30',
+    presetData3: '50',
+    presetData4: '60',
+    presetData5: '80',
+    presetData6: '100',
+    paymentMinAmount: '20',
+    paymentMaxAmount: '100',
+    depositSetting: '20',
+    // 提现设置
+    withdrawMethods: {
+      Paypal: false,
+      Wechat: false,
+      Alipay: false,
+    },
+    dailyLimit: '3000',
   })
   const [currencyIcon, setCurrencyIcon] = useState<string | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
@@ -99,7 +129,31 @@ export default function CurrencyPage() {
   const handleReset = () => setSearchName('')
 
   const openAddModal = () => {
-    setEditForm({ currency: '', currencyCode: '', minAmount: '', deposit: '', brand: '', agent: '', withdrawMethod: '', withdrawTimes: '', freeDays: '', withdrawRangeMin: '', withdrawRangeMax: '' })
+    setEditForm({
+      currency: '',
+      currencyCode: '',
+      minAmount: '',
+      deposit: '',
+      brand: '',
+      agent: '',
+      withdrawMethod: '',
+      withdrawTimes: '',
+      freeDays: '',
+      withdrawRangeMin: '',
+      withdrawRangeMax: '',
+      paymentMethods: { GooglePay: false, ApplePay: false, DebitCard: false, PayPal: false, Alipay: false, AlipayHK: false, AlipayTNG: false, IDEAL: false },
+      presetData1: '20',
+      presetData2: '30',
+      presetData3: '50',
+      presetData4: '60',
+      presetData5: '80',
+      presetData6: '100',
+      paymentMinAmount: '20',
+      paymentMaxAmount: '100',
+      depositSetting: '20',
+      withdrawMethods: { Paypal: false, Wechat: false, Alipay: false },
+      dailyLimit: '3000',
+    })
     setCurrencyIcon(null)
     setModalType('add')
   }
@@ -118,6 +172,18 @@ export default function CurrencyPage() {
       freeDays: item.freeDays,
       withdrawRangeMin: rangeParts[0] || '',
       withdrawRangeMax: rangeParts[1] || '',
+      paymentMethods: { GooglePay: false, ApplePay: false, DebitCard: false, PayPal: false, Alipay: false, AlipayHK: false, AlipayTNG: false, IDEAL: false },
+      presetData1: '20',
+      presetData2: '30',
+      presetData3: '50',
+      presetData4: '60',
+      presetData5: '80',
+      presetData6: '100',
+      paymentMinAmount: '20',
+      paymentMaxAmount: '100',
+      depositSetting: item.deposit || '20',
+      withdrawMethods: { Paypal: false, Wechat: false, Alipay: false },
+      dailyLimit: '3000',
     })
     setCurrencyIcon(null)
     setModalType('edit')
@@ -137,6 +203,18 @@ export default function CurrencyPage() {
       freeDays: item.freeDays,
       withdrawRangeMin: rangeParts[0] || '',
       withdrawRangeMax: rangeParts[1] || '',
+      paymentMethods: { GooglePay: false, ApplePay: false, DebitCard: false, PayPal: false, Alipay: false, AlipayHK: false, AlipayTNG: false, IDEAL: false },
+      presetData1: '20',
+      presetData2: '30',
+      presetData3: '50',
+      presetData4: '60',
+      presetData5: '80',
+      presetData6: '100',
+      paymentMinAmount: '20',
+      paymentMaxAmount: '100',
+      depositSetting: item.deposit || '20',
+      withdrawMethods: { Paypal: false, Wechat: false, Alipay: false },
+      dailyLimit: '3000',
     })
     setModalType('detail')
   }
@@ -148,7 +226,31 @@ export default function CurrencyPage() {
 
   const closeModal = () => {
     setModalType(null)
-    setEditForm({ currency: '', currencyCode: '', minAmount: '', deposit: '', brand: '', agent: '', withdrawMethod: '', withdrawTimes: '', freeDays: '', withdrawRangeMin: '', withdrawRangeMax: '' })
+    setEditForm({
+      currency: '',
+      currencyCode: '',
+      minAmount: '',
+      deposit: '',
+      brand: '',
+      agent: '',
+      withdrawMethod: '',
+      withdrawTimes: '',
+      freeDays: '',
+      withdrawRangeMin: '',
+      withdrawRangeMax: '',
+      paymentMethods: { GooglePay: false, ApplePay: false, DebitCard: false, PayPal: false, Alipay: false, AlipayHK: false, AlipayTNG: false, IDEAL: false },
+      presetData1: '20',
+      presetData2: '30',
+      presetData3: '50',
+      presetData4: '60',
+      presetData5: '80',
+      presetData6: '100',
+      paymentMinAmount: '20',
+      paymentMaxAmount: '100',
+      depositSetting: '20',
+      withdrawMethods: { Paypal: false, Wechat: false, Alipay: false },
+      dailyLimit: '3000',
+    })
     setCurrencyIcon(null)
     setDeleteTarget('')
   }
@@ -410,7 +512,7 @@ export default function CurrencyPage() {
         <div className="fixed inset-0 z-50 flex items-center justify-center">
           <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={closeModal} />
           <div
-            className="relative bg-white rounded-2xl shadow-2xl border border-[#E2E8F0] w-[520px] max-h-[85vh] overflow-hidden flex flex-col"
+            className="relative bg-white rounded-2xl shadow-2xl border border-[#E2E8F0] w-[700px] max-h-[88vh] overflow-hidden flex flex-col"
             style={{ animation: 'modalEnter 0.3s cubic-bezier(0.16, 1, 0.3, 1)' }}
           >
             {/* Header */}
@@ -427,124 +529,327 @@ export default function CurrencyPage() {
             </div>
 
             {/* Body */}
-            <div className="px-6 py-5 space-y-5 overflow-y-auto flex-1 custom-scrollbar">
-              {/* 货币名称 */}
-              <div className="flex items-center gap-4">
-                <label className="text-[14px] text-[#334155] font-medium w-[120px] shrink-0">
-                  <span className="text-[#EF4444] mr-0.5">*</span>
-                  货币名称:
-                </label>
-                <Input
-                  placeholder="请输入货币名称"
-                  value={editForm.currency}
-                  onChange={(e) => setEditForm({ ...editForm, currency: e.target.value })}
-                  className="h-10 flex-1 text-[13px] border-[#D1D5DB] bg-white focus:border-[#3B82F6] focus:ring-2 focus:ring-[#3B82F6]/10 rounded-lg transition-all duration-200 placeholder:text-[#9CA3AF]"
-                />
-              </div>
+            <div className="px-6 py-5 space-y-6 overflow-y-auto flex-1 custom-scrollbar">
 
-              {/* 货币代码/符号 */}
-              <div className="flex items-center gap-4">
-                <label className="text-[14px] text-[#334155] font-medium w-[120px] shrink-0">
-                  <span className="text-[#EF4444] mr-0.5">*</span>
-                  货币代码/符号:
-                </label>
-                <Select
-                  value={editForm.currencyCode}
-                  onValueChange={(value) => setEditForm({ ...editForm, currencyCode: value })}
-                >
-                  <SelectTrigger className="h-10 flex-1 text-[13px] border-[#D1D5DB] bg-white focus:border-[#3B82F6] focus:ring-2 focus:ring-[#3B82F6]/10 rounded-lg transition-all duration-200">
-                    <SelectValue placeholder="请选择货币代码/符号" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {currencyCodeOptions.map((opt) => (
-                      <SelectItem key={opt.value} value={opt.value} className="text-[13px]">
-                        {opt.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
+              {/* ====== 第一部分：基本信息 ====== */}
+              <div>
+                <div className="flex items-center gap-2 mb-4">
+                  <div className="w-1 h-4 rounded-full bg-gradient-to-b from-[#3B82F6] to-[#6366F1]" />
+                  <h4 className="text-[14px] font-semibold text-[#111827]">基本信息</h4>
+                </div>
+                <div className="space-y-4 pl-3">
+                  {/* 货币名称 */}
+                  <div className="flex items-center gap-4">
+                    <label className="text-[13px] text-[#334155] font-medium w-[120px] shrink-0">
+                      <span className="text-[#EF4444] mr-0.5">*</span>
+                      货币名称
+                    </label>
+                    <Input
+                      placeholder="请输入货币名称"
+                      value={editForm.currency}
+                      onChange={(e) => setEditForm({ ...editForm, currency: e.target.value })}
+                      className="h-9 flex-1 text-[13px] border-[#D1D5DB] bg-white focus:border-[#3B82F6] focus:ring-2 focus:ring-[#3B82F6]/10 rounded-lg transition-all duration-200 placeholder:text-[#9CA3AF]"
+                    />
+                  </div>
 
-              {/* 货币最小金额 */}
-              <div className="flex items-center gap-4">
-                <label className="text-[14px] text-[#334155] font-medium w-[120px] shrink-0">
-                  <span className="text-[#EF4444] mr-0.5">*</span>
-                  货币最小金额:
-                </label>
-                <Input
-                  placeholder="请输入货币最小金额"
-                  value={editForm.minAmount}
-                  onChange={(e) => setEditForm({ ...editForm, minAmount: e.target.value })}
-                  className="h-10 flex-1 text-[13px] border-[#D1D5DB] bg-white focus:border-[#3B82F6] focus:ring-2 focus:ring-[#3B82F6]/10 rounded-lg transition-all duration-200 placeholder:text-[#9CA3AF]"
-                />
-              </div>
+                  {/* 货币代码/符号 */}
+                  <div className="flex items-center gap-4">
+                    <label className="text-[13px] text-[#334155] font-medium w-[120px] shrink-0">
+                      <span className="text-[#EF4444] mr-0.5">*</span>
+                      货币代码/符号
+                    </label>
+                    <Select
+                      value={editForm.currencyCode}
+                      onValueChange={(value) => setEditForm({ ...editForm, currencyCode: value })}
+                    >
+                      <SelectTrigger className="h-9 flex-1 text-[13px] border-[#D1D5DB] bg-white focus:border-[#3B82F6] focus:ring-2 focus:ring-[#3B82F6]/10 rounded-lg transition-all duration-200">
+                        <SelectValue placeholder="请选择货币代码/符号" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {currencyCodeOptions.map((opt) => (
+                          <SelectItem key={opt.value} value={opt.value} className="text-[13px]">
+                            {opt.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
 
-              {/* 获取当前货币最小值按钮 */}
-              <div className="flex items-center gap-4">
-                <div className="w-[120px] shrink-0" />
-                <div className="flex-1">
-                  <Button
-                    type="button"
-                    onClick={handleGetMinAmount}
-                    disabled={!editForm.currencyCode}
-                    className="h-9 px-4 bg-[#3B82F6] hover:bg-[#2563EB] disabled:bg-[#94A3B8] disabled:cursor-not-allowed text-white text-[12px] font-medium rounded-lg transition-all duration-200"
-                  >
-                    <Info className="w-3.5 h-3.5 mr-1.5" />
-                    获取当前货币最小值(仅作参考)
-                  </Button>
+                  {/* 货币最小金额 */}
+                  <div className="flex items-center gap-4">
+                    <label className="text-[13px] text-[#334155] font-medium w-[120px] shrink-0">
+                      <span className="text-[#EF4444] mr-0.5">*</span>
+                      货币最小金额
+                    </label>
+                    <div className="flex items-center gap-3 flex-1">
+                      <Input
+                        placeholder="请输入货币最小金额"
+                        value={editForm.minAmount}
+                        onChange={(e) => setEditForm({ ...editForm, minAmount: e.target.value })}
+                        className="h-9 flex-1 text-[13px] border-[#D1D5DB] bg-white focus:border-[#3B82F6] focus:ring-2 focus:ring-[#3B82F6]/10 rounded-lg transition-all duration-200 placeholder:text-[#9CA3AF]"
+                      />
+                      <Button
+                        type="button"
+                        onClick={handleGetMinAmount}
+                        disabled={!editForm.currencyCode}
+                        className="h-9 px-3 bg-[#3B82F6] hover:bg-[#2563EB] disabled:bg-[#94A3B8] disabled:cursor-not-allowed text-white text-[12px] font-medium rounded-lg transition-all duration-200 shrink-0"
+                      >
+                        <Info className="w-3.5 h-3.5 mr-1" />
+                        获取参考值
+                      </Button>
+                    </div>
+                  </div>
+
+                  {/* 货币图标 */}
+                  <div className="flex items-start gap-4">
+                    <label className="text-[13px] text-[#334155] font-medium w-[120px] shrink-0 pt-2">货币图标</label>
+                    <div className="flex-1">
+                      <input
+                        ref={fileInputRef}
+                        type="file"
+                        accept="image/*"
+                        onChange={handleIconUpload}
+                        className="hidden"
+                      />
+                      {currencyIcon ? (
+                        <div
+                          className="relative w-[80px] h-[80px] rounded-xl border-2 border-[#E2E8F0] overflow-hidden group cursor-pointer"
+                          onClick={() => fileInputRef.current?.click()}
+                        >
+                          <img src={currencyIcon} alt="货币图标" className="w-full h-full object-cover" />
+                          <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                            <span className="text-white text-[11px] font-medium">更换图标</span>
+                          </div>
+                        </div>
+                      ) : (
+                        <div
+                          onClick={() => fileInputRef.current?.click()}
+                          className="w-[80px] h-[80px] rounded-xl border-2 border-dashed border-[#CBD5E1] bg-[#F8FAFC] hover:border-[#3B82F6] hover:bg-[#EFF6FF] transition-all duration-200 cursor-pointer flex flex-col items-center justify-center gap-1.5"
+                        >
+                          <Upload className="w-4 h-4 text-[#94A3B8]" />
+                          <span className="text-[11px] text-[#94A3B8] font-medium">上传图标</span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
                 </div>
               </div>
 
-              {/* 货币图标 */}
-              <div className="flex items-start gap-4">
-                <label className="text-[14px] text-[#334155] font-medium w-[120px] shrink-0 pt-2">货币图标:</label>
-                <div className="flex-1">
-                  <input
-                    ref={fileInputRef}
-                    type="file"
-                    accept="image/*"
-                    onChange={handleIconUpload}
-                    className="hidden"
-                  />
-                  {currencyIcon ? (
-                    <div
-                      className="relative w-[100px] h-[100px] rounded-xl border-2 border-[#E2E8F0] overflow-hidden group cursor-pointer"
-                      onClick={() => fileInputRef.current?.click()}
-                    >
-                      <img
-                        src={currencyIcon}
-                        alt="货币图标"
-                        className="w-full h-full object-cover"
-                      />
-                      <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                        <span className="text-white text-[12px] font-medium">更换图标</span>
+              {/* 分隔线 */}
+              <div className="border-t border-dashed border-[#E2E8F0]" />
+
+              {/* ====== 第二部分：支付设置 ====== */}
+              <div>
+                <div className="flex items-center gap-2 mb-4">
+                  <div className="w-1 h-4 rounded-full bg-gradient-to-b from-[#10B981] to-[#059669]" />
+                  <h4 className="text-[14px] font-semibold text-[#111827]">支付设置</h4>
+                  <CreditCard className="w-3.5 h-3.5 text-[#10B981] ml-0.5" />
+                </div>
+                <div className="space-y-4 pl-3">
+                  {/* 支付方式 - 复选框组 */}
+                  <div className="flex items-start gap-4">
+                    <label className="text-[13px] text-[#334155] font-medium w-[120px] shrink-0 pt-1.5">
+                      支付方式
+                    </label>
+                    <div className="flex-1 grid grid-cols-4 gap-x-4 gap-y-2.5">
+                      {(['GooglePay', 'ApplePay', 'DebitCard', 'PayPal', 'Alipay', 'AlipayHK', 'AlipayTNG', 'IDEAL'] as const).map((method) => (
+                        <div key={method} className="flex items-center gap-2">
+                          <Checkbox
+                            checked={editForm.paymentMethods[method]}
+                            onCheckedChange={(checked) =>
+                              setEditForm({
+                                ...editForm,
+                                paymentMethods: { ...editForm.paymentMethods, [method]: !!checked },
+                              })
+                            }
+                            className="data-[state=checked]:bg-[#3B82F6] data-[state=checked]:border-[#3B82F6]"
+                          />
+                          <span className="text-[13px] text-[#334155]">{method}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* 预设数据 */}
+                  <div className="flex items-start gap-4">
+                    <label className="text-[13px] text-[#334155] font-medium w-[120px] shrink-0 pt-1.5">
+                      预设数据
+                    </label>
+                    <div className="flex-1 grid grid-cols-3 gap-x-4 gap-y-3">
+                      {([
+                        { key: 'presetData1', label: '预设数据1' },
+                        { key: 'presetData2', label: '预设数据2' },
+                        { key: 'presetData3', label: '预设数据3' },
+                        { key: 'presetData4', label: '预设数据4' },
+                        { key: 'presetData5', label: '预设数据5' },
+                        { key: 'presetData6', label: '预设数据6' },
+                      ] as const).map(({ key, label }) => (
+                        <div key={key} className="flex items-center gap-2">
+                          <span className="text-[12px] text-[#64748B] w-[56px] shrink-0">{label}</span>
+                          <Input
+                            value={editForm[key as keyof typeof editForm] as string}
+                            onChange={(e) => setEditForm({ ...editForm, [key]: e.target.value })}
+                            className="h-8 w-full text-[13px] border-[#D1D5DB] bg-white focus:border-[#10B981] focus:ring-2 focus:ring-[#10B981]/10 rounded-lg transition-all duration-200"
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* 最小金额 / 最大金额 / 押金设置 */}
+                  <div className="flex items-start gap-4">
+                    <label className="text-[13px] text-[#334155] font-medium w-[120px] shrink-0 pt-1.5">
+                      金额设置
+                    </label>
+                    <div className="flex-1 grid grid-cols-3 gap-x-4">
+                      <div className="flex items-center gap-2">
+                        <span className="text-[12px] text-[#64748B] shrink-0">最小金额</span>
+                        <Input
+                          value={editForm.paymentMinAmount}
+                          onChange={(e) => setEditForm({ ...editForm, paymentMinAmount: e.target.value })}
+                          className="h-8 w-full text-[13px] border-[#D1D5DB] bg-white focus:border-[#10B981] focus:ring-2 focus:ring-[#10B981]/10 rounded-lg transition-all duration-200"
+                        />
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span className="text-[12px] text-[#64748B] shrink-0">最大金额</span>
+                        <Input
+                          value={editForm.paymentMaxAmount}
+                          onChange={(e) => setEditForm({ ...editForm, paymentMaxAmount: e.target.value })}
+                          className="h-8 w-full text-[13px] border-[#D1D5DB] bg-white focus:border-[#10B981] focus:ring-2 focus:ring-[#10B981]/10 rounded-lg transition-all duration-200"
+                        />
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span className="text-[12px] text-[#64748B] shrink-0">押金设置</span>
+                        <Input
+                          value={editForm.depositSetting}
+                          onChange={(e) => setEditForm({ ...editForm, depositSetting: e.target.value })}
+                          className="h-8 w-full text-[13px] border-[#D1D5DB] bg-white focus:border-[#10B981] focus:ring-2 focus:ring-[#10B981]/10 rounded-lg transition-all duration-200"
+                        />
                       </div>
                     </div>
-                  ) : (
-                    <div
-                      onClick={() => fileInputRef.current?.click()}
-                      className="w-[100px] h-[100px] rounded-xl border-2 border-dashed border-[#CBD5E1] bg-[#F8FAFC] hover:border-[#3B82F6] hover:bg-[#EFF6FF] transition-all duration-200 cursor-pointer flex flex-col items-center justify-center gap-2"
-                    >
-                      <Upload className="w-5 h-5 text-[#94A3B8]" />
-                      <span className="text-[12px] text-[#94A3B8] font-medium">货币图标</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* 分隔线 */}
+              <div className="border-t border-dashed border-[#E2E8F0]" />
+
+              {/* ====== 第三部分：提现设置 ====== */}
+              <div>
+                <div className="flex items-center gap-2 mb-4">
+                  <div className="w-1 h-4 rounded-full bg-gradient-to-b from-[#F59E0B] to-[#D97706]" />
+                  <h4 className="text-[14px] font-semibold text-[#111827]">提现设置</h4>
+                  <Wallet className="w-3.5 h-3.5 text-[#F59E0B] ml-0.5" />
+                </div>
+                <div className="space-y-4 pl-3">
+                  {/* 提现方式 - 复选框组 */}
+                  <div className="flex items-center gap-4">
+                    <label className="text-[13px] text-[#334155] font-medium w-[120px] shrink-0">
+                      提现方式
+                    </label>
+                    <div className="flex items-center gap-5">
+                      {([
+                        { key: 'Paypal', label: 'Paypal' },
+                        { key: 'Wechat', label: '微信' },
+                        { key: 'Alipay', label: '支付宝' },
+                      ] as const).map(({ key, label }) => (
+                        <div key={key} className="flex items-center gap-2">
+                          <Checkbox
+                            checked={editForm.withdrawMethods[key]}
+                            onCheckedChange={(checked) =>
+                              setEditForm({
+                                ...editForm,
+                                withdrawMethods: { ...editForm.withdrawMethods, [key]: !!checked },
+                              })
+                            }
+                            className="data-[state=checked]:bg-[#F59E0B] data-[state=checked]:border-[#F59E0B]"
+                          />
+                          <span className="text-[13px] text-[#334155]">{label}</span>
+                        </div>
+                      ))}
                     </div>
-                  )}
+                  </div>
+
+                  {/* 提现次数 + 免征天数 */}
+                  <div className="flex items-center gap-4">
+                    <label className="text-[13px] text-[#334155] font-medium w-[120px] shrink-0" />
+                    <div className="flex-1 grid grid-cols-2 gap-x-4">
+                      <div className="flex items-center gap-2">
+                        <span className="text-[13px] text-[#334155] font-medium shrink-0">
+                          <span className="text-[#EF4444] mr-0.5">*</span>
+                          提现次数(天)
+                        </span>
+                        <Input
+                          value={editForm.withdrawTimes}
+                          onChange={(e) => setEditForm({ ...editForm, withdrawTimes: e.target.value })}
+                          placeholder="3"
+                          className="h-9 flex-1 text-[13px] border-[#D1D5DB] bg-white focus:border-[#F59E0B] focus:ring-2 focus:ring-[#F59E0B]/10 rounded-lg transition-all duration-200 placeholder:text-[#9CA3AF]"
+                        />
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span className="text-[13px] text-[#334155] font-medium shrink-0">免征天数</span>
+                        <Input
+                          value={editForm.freeDays}
+                          onChange={(e) => setEditForm({ ...editForm, freeDays: e.target.value })}
+                          placeholder="0"
+                          className="h-9 flex-1 text-[13px] border-[#D1D5DB] bg-white focus:border-[#F59E0B] focus:ring-2 focus:ring-[#F59E0B]/10 rounded-lg transition-all duration-200 placeholder:text-[#9CA3AF]"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* 提现范围 */}
+                  <div className="flex items-center gap-4">
+                    <label className="text-[13px] text-[#334155] font-medium w-[120px] shrink-0">
+                      <span className="text-[#EF4444] mr-0.5">*</span>
+                      提现范围
+                    </label>
+                    <div className="flex items-center gap-2 flex-1">
+                      <Input
+                        placeholder="最小值"
+                        value={editForm.withdrawRangeMin}
+                        onChange={(e) => setEditForm({ ...editForm, withdrawRangeMin: e.target.value })}
+                        className="h-9 flex-1 text-[13px] border-[#D1D5DB] bg-white focus:border-[#F59E0B] focus:ring-2 focus:ring-[#F59E0B]/10 rounded-lg transition-all duration-200 placeholder:text-[#9CA3AF]"
+                      />
+                      <span className="text-[14px] text-[#94A3B8] font-medium px-1">~</span>
+                      <Input
+                        placeholder="最大值"
+                        value={editForm.withdrawRangeMax}
+                        onChange={(e) => setEditForm({ ...editForm, withdrawRangeMax: e.target.value })}
+                        className="h-9 flex-1 text-[13px] border-[#D1D5DB] bg-white focus:border-[#F59E0B] focus:ring-2 focus:ring-[#F59E0B]/10 rounded-lg transition-all duration-200 placeholder:text-[#9CA3AF]"
+                      />
+                    </div>
+                  </div>
+
+                  {/* 货币日限额 */}
+                  <div className="flex items-center gap-4">
+                    <label className="text-[13px] text-[#334155] font-medium w-[120px] shrink-0">
+                      <span className="text-[#EF4444] mr-0.5">*</span>
+                      货币日限额
+                    </label>
+                    <Input
+                      value={editForm.dailyLimit}
+                      onChange={(e) => setEditForm({ ...editForm, dailyLimit: e.target.value })}
+                      placeholder="3000"
+                      className="h-9 flex-1 text-[13px] border-[#D1D5DB] bg-white focus:border-[#F59E0B] focus:ring-2 focus:ring-[#F59E0B]/10 rounded-lg transition-all duration-200 placeholder:text-[#9CA3AF]"
+                    />
+                  </div>
                 </div>
               </div>
             </div>
 
             {/* Footer */}
-            <div className="flex items-center justify-center gap-3 px-6 py-5 border-t border-[#F1F5F9] shrink-0">
+            <div className="flex items-center justify-center gap-3 px-6 py-4 border-t border-[#E2E8F0] bg-[#FAFBFC] shrink-0">
               <Button
                 onClick={closeModal}
-                className="h-10 px-10 bg-gradient-to-r from-[#3B82F6] to-[#2563EB] hover:from-[#2563EB] hover:to-[#1D4ED8] text-white text-[13px] font-semibold rounded-lg shadow-md shadow-blue-200/50 transition-all duration-200"
+                className="h-10 px-12 bg-gradient-to-r from-[#3B82F6] to-[#2563EB] hover:from-[#2563EB] hover:to-[#1D4ED8] text-white text-[13px] font-semibold rounded-lg shadow-md shadow-blue-200/50 transition-all duration-200"
               >
                 确定
               </Button>
               <Button
                 variant="outline"
                 onClick={closeModal}
-                className="h-10 px-10 border-[#D1D5DB] text-[#64748B] hover:border-[#3B82F6] hover:text-[#3B82F6] hover:bg-[#EFF6FF] text-[13px] font-medium rounded-lg transition-all duration-200"
+                className="h-10 px-12 border-[#D1D5DB] text-[#64748B] hover:border-[#3B82F6] hover:text-[#3B82F6] hover:bg-[#EFF6FF] text-[13px] font-medium rounded-lg transition-all duration-200"
               >
                 取消
               </Button>
