@@ -41,6 +41,7 @@ import {
   ShieldCheck,
   Blocks,
   Coins,
+  ScrollText,
 } from 'lucide-react'
 import { ReactNode } from 'react'
 
@@ -85,6 +86,7 @@ const sidebarNavSections = [
       { icon: FileClock, label: '支付记录', href: '/payment-records' },
       { icon: GitBranch, label: '版本管理', href: '/version-management' },
       { icon: Tv, label: '屏幕机管理', href: '/screen-machines' },
+      { icon: ScrollText, label: '代理端日志', href: '/agent-logs' },
     ],
   },
   {
