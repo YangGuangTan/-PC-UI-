@@ -1,8 +1,15 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 import {
   Table,
   TableBody,
@@ -27,6 +34,8 @@ import {
   Eye,
   X,
   Coins,
+  Upload,
+  Info,
 } from 'lucide-react'
 
 // Mock currency data
@@ -37,6 +46,34 @@ const currencyData = [
   { id: 4, currency: '欧元', minAmount: '1', deposit: '30', brand: '豹风', agent: 'admin', withdrawMethod: '-', withdrawTimes: '-', freeDays: '0', withdrawRange: '0 - 0', createTime: '2024-10-14 18:14:54' },
 ]
 
+// 货币代码/符号选项
+const currencyCodeOptions = [
+  { label: 'CNY (¥) - 人民币', value: 'CNY' },
+  { label: 'USD ($) - 美元', value: 'USD' },
+  { label: 'EUR (€) - 欧元', value: 'EUR' },
+  { label: 'GBP (£) - 英镑', value: 'GBP' },
+  { label: 'JPY (¥) - 日元', value: 'JPY' },
+  { label: 'HKD (HK$) - 港币', value: 'HKD' },
+  { label: 'KRW (₩) - 韩元', value: 'KRW' },
+  { label: 'SGD (S$) - 新加坡元', value: 'SGD' },
+  { label: 'AUD (A$) - 澳大利亚元', value: 'AUD' },
+  { label: 'THB (฿) - 泰铢', value: 'THB' },
+]
+
+// 货币最小金额参考映射
+const currencyMinAmountMap: Record<string, string> = {
+  CNY: '0.01',
+  USD: '0.01',
+  EUR: '0.01',
+  GBP: '0.01',
+  JPY: '1',
+  HKD: '0.1',
+  KRW: '1',
+  SGD: '0.01',
+  AUD: '0.01',
+  THB: '0.01',
+}
+
 type ModalType = 'add' | 'edit' | 'delete' | 'detail' | null
 
 export default function CurrencyPage() {
@@ -44,6 +81,7 @@ export default function CurrencyPage() {
   const [modalType, setModalType] = useState<ModalType>(null)
   const [editForm, setEditForm] = useState({
     currency: '',
+    currencyCode: '',
     minAmount: '',
     deposit: '',
     brand: '',
@@ -54,12 +92,15 @@ export default function CurrencyPage() {
     withdrawRangeMin: '',
     withdrawRangeMax: '',
   })
+  const [currencyIcon, setCurrencyIcon] = useState<string | null>(null)
+  const fileInputRef = useRef<HTMLInputElement>(null)
   const [deleteTarget, setDeleteTarget] = useState('')
 
   const handleReset = () => setSearchName('')
 
   const openAddModal = () => {
-    setEditForm({ currency: '', minAmount: '', deposit: '', brand: '', agent: '', withdrawMethod: '', withdrawTimes: '', freeDays: '', withdrawRangeMin: '', withdrawRangeMax: '' })
+    setEditForm({ currency: '', currencyCode: '', minAmount: '', deposit: '', brand: '', agent: '', withdrawMethod: '', withdrawTimes: '', freeDays: '', withdrawRangeMin: '', withdrawRangeMax: '' })
+    setCurrencyIcon(null)
     setModalType('add')
   }
 
@@ -67,6 +108,7 @@ export default function CurrencyPage() {
     const rangeParts = item.withdrawRange.split(' - ')
     setEditForm({
       currency: item.currency,
+      currencyCode: '',
       minAmount: item.minAmount,
       deposit: item.deposit,
       brand: item.brand,
@@ -77,6 +119,7 @@ export default function CurrencyPage() {
       withdrawRangeMin: rangeParts[0] || '',
       withdrawRangeMax: rangeParts[1] || '',
     })
+    setCurrencyIcon(null)
     setModalType('edit')
   }
 
@@ -84,6 +127,7 @@ export default function CurrencyPage() {
     const rangeParts = item.withdrawRange.split(' - ')
     setEditForm({
       currency: item.currency,
+      currencyCode: '',
       minAmount: item.minAmount,
       deposit: item.deposit,
       brand: item.brand,
@@ -104,8 +148,26 @@ export default function CurrencyPage() {
 
   const closeModal = () => {
     setModalType(null)
-    setEditForm({ currency: '', minAmount: '', deposit: '', brand: '', agent: '', withdrawMethod: '', withdrawTimes: '', freeDays: '', withdrawRangeMin: '', withdrawRangeMax: '' })
+    setEditForm({ currency: '', currencyCode: '', minAmount: '', deposit: '', brand: '', agent: '', withdrawMethod: '', withdrawTimes: '', freeDays: '', withdrawRangeMin: '', withdrawRangeMax: '' })
+    setCurrencyIcon(null)
     setDeleteTarget('')
+  }
+
+  const handleGetMinAmount = () => {
+    if (editForm.currencyCode && currencyMinAmountMap[editForm.currencyCode]) {
+      setEditForm({ ...editForm, minAmount: currencyMinAmountMap[editForm.currencyCode] })
+    }
+  }
+
+  const handleIconUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (file) {
+      const reader = new FileReader()
+      reader.onloadend = () => {
+        setCurrencyIcon(reader.result as string)
+      }
+      reader.readAsDataURL(file)
+    }
   }
 
   return (
@@ -343,8 +405,156 @@ export default function CurrencyPage() {
         </div>
       )}
 
-      {/* ========== 新增/编辑弹窗 ========== */}
-      {(modalType === 'add' || modalType === 'edit') && (
+      {/* ========== 新增弹窗 ========== */}
+      {modalType === 'add' && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={closeModal} />
+          <div
+            className="relative bg-white rounded-2xl shadow-2xl border border-[#E2E8F0] w-[520px] max-h-[85vh] overflow-hidden flex flex-col"
+            style={{ animation: 'modalEnter 0.3s cubic-bezier(0.16, 1, 0.3, 1)' }}
+          >
+            {/* Header */}
+            <div className="flex items-center justify-between px-6 py-4 border-b border-[#E2E8F0]">
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-[#3B82F6] to-[#2563EB] flex items-center justify-center shadow-md shadow-blue-200/50">
+                  <Plus className="w-4 h-4 text-white" />
+                </div>
+                <h3 className="text-[16px] font-bold text-[#111827]">新增货币</h3>
+              </div>
+              <button onClick={closeModal} className="p-2 rounded-xl hover:bg-[#F1F5F9] transition-colors group">
+                <X className="w-5 h-5 text-[#94A3B8] group-hover:text-[#334155] transition-colors" />
+              </button>
+            </div>
+
+            {/* Body */}
+            <div className="px-6 py-5 space-y-5 overflow-y-auto flex-1 custom-scrollbar">
+              {/* 货币名称 */}
+              <div className="flex items-center gap-4">
+                <label className="text-[14px] text-[#334155] font-medium w-[120px] shrink-0">
+                  <span className="text-[#EF4444] mr-0.5">*</span>
+                  货币名称:
+                </label>
+                <Input
+                  placeholder="请输入货币名称"
+                  value={editForm.currency}
+                  onChange={(e) => setEditForm({ ...editForm, currency: e.target.value })}
+                  className="h-10 flex-1 text-[13px] border-[#D1D5DB] bg-white focus:border-[#3B82F6] focus:ring-2 focus:ring-[#3B82F6]/10 rounded-lg transition-all duration-200 placeholder:text-[#9CA3AF]"
+                />
+              </div>
+
+              {/* 货币代码/符号 */}
+              <div className="flex items-center gap-4">
+                <label className="text-[14px] text-[#334155] font-medium w-[120px] shrink-0">
+                  <span className="text-[#EF4444] mr-0.5">*</span>
+                  货币代码/符号:
+                </label>
+                <Select
+                  value={editForm.currencyCode}
+                  onValueChange={(value) => setEditForm({ ...editForm, currencyCode: value })}
+                >
+                  <SelectTrigger className="h-10 flex-1 text-[13px] border-[#D1D5DB] bg-white focus:border-[#3B82F6] focus:ring-2 focus:ring-[#3B82F6]/10 rounded-lg transition-all duration-200">
+                    <SelectValue placeholder="请选择货币代码/符号" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {currencyCodeOptions.map((opt) => (
+                      <SelectItem key={opt.value} value={opt.value} className="text-[13px]">
+                        {opt.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {/* 货币最小金额 */}
+              <div className="flex items-center gap-4">
+                <label className="text-[14px] text-[#334155] font-medium w-[120px] shrink-0">
+                  <span className="text-[#EF4444] mr-0.5">*</span>
+                  货币最小金额:
+                </label>
+                <Input
+                  placeholder="请输入货币最小金额"
+                  value={editForm.minAmount}
+                  onChange={(e) => setEditForm({ ...editForm, minAmount: e.target.value })}
+                  className="h-10 flex-1 text-[13px] border-[#D1D5DB] bg-white focus:border-[#3B82F6] focus:ring-2 focus:ring-[#3B82F6]/10 rounded-lg transition-all duration-200 placeholder:text-[#9CA3AF]"
+                />
+              </div>
+
+              {/* 获取当前货币最小值按钮 */}
+              <div className="flex items-center gap-4">
+                <div className="w-[120px] shrink-0" />
+                <div className="flex-1">
+                  <Button
+                    type="button"
+                    onClick={handleGetMinAmount}
+                    disabled={!editForm.currencyCode}
+                    className="h-9 px-4 bg-[#3B82F6] hover:bg-[#2563EB] disabled:bg-[#94A3B8] disabled:cursor-not-allowed text-white text-[12px] font-medium rounded-lg transition-all duration-200"
+                  >
+                    <Info className="w-3.5 h-3.5 mr-1.5" />
+                    获取当前货币最小值(仅作参考)
+                  </Button>
+                </div>
+              </div>
+
+              {/* 货币图标 */}
+              <div className="flex items-start gap-4">
+                <label className="text-[14px] text-[#334155] font-medium w-[120px] shrink-0 pt-2">货币图标:</label>
+                <div className="flex-1">
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/*"
+                    onChange={handleIconUpload}
+                    className="hidden"
+                  />
+                  {currencyIcon ? (
+                    <div
+                      className="relative w-[100px] h-[100px] rounded-xl border-2 border-[#E2E8F0] overflow-hidden group cursor-pointer"
+                      onClick={() => fileInputRef.current?.click()}
+                    >
+                      <img
+                        src={currencyIcon}
+                        alt="货币图标"
+                        className="w-full h-full object-cover"
+                      />
+                      <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                        <span className="text-white text-[12px] font-medium">更换图标</span>
+                      </div>
+                    </div>
+                  ) : (
+                    <div
+                      onClick={() => fileInputRef.current?.click()}
+                      className="w-[100px] h-[100px] rounded-xl border-2 border-dashed border-[#CBD5E1] bg-[#F8FAFC] hover:border-[#3B82F6] hover:bg-[#EFF6FF] transition-all duration-200 cursor-pointer flex flex-col items-center justify-center gap-2"
+                    >
+                      <Upload className="w-5 h-5 text-[#94A3B8]" />
+                      <span className="text-[12px] text-[#94A3B8] font-medium">货币图标</span>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* Footer */}
+            <div className="flex items-center justify-center gap-3 px-6 py-5 border-t border-[#F1F5F9] shrink-0">
+              <Button
+                onClick={closeModal}
+                className="h-10 px-10 bg-gradient-to-r from-[#3B82F6] to-[#2563EB] hover:from-[#2563EB] hover:to-[#1D4ED8] text-white text-[13px] font-semibold rounded-lg shadow-md shadow-blue-200/50 transition-all duration-200"
+              >
+                确定
+              </Button>
+              <Button
+                variant="outline"
+                onClick={closeModal}
+                className="h-10 px-10 border-[#D1D5DB] text-[#64748B] hover:border-[#3B82F6] hover:text-[#3B82F6] hover:bg-[#EFF6FF] text-[13px] font-medium rounded-lg transition-all duration-200"
+              >
+                取消
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ========== 编辑弹窗 ========== */}
+      {modalType === 'edit' && (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
           <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={closeModal} />
           <div
@@ -357,7 +567,7 @@ export default function CurrencyPage() {
                 <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-[#3B82F6] to-[#2563EB] flex items-center justify-center shadow-md shadow-blue-200/50">
                   <Pencil className="w-4 h-4 text-white" />
                 </div>
-                <h3 className="text-[16px] font-bold text-[#111827]">{modalType === 'add' ? '新增货币' : '编辑货币'}</h3>
+                <h3 className="text-[16px] font-bold text-[#111827]">编辑货币</h3>
               </div>
               <button onClick={closeModal} className="p-2 rounded-xl hover:bg-[#F1F5F9] transition-colors group">
                 <X className="w-5 h-5 text-[#94A3B8] group-hover:text-[#334155] transition-colors" />
