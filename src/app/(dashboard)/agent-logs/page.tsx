@@ -26,7 +26,6 @@ import {
   ScrollText,
   CheckCircle2,
   XCircle,
-  User,
   Server,
   Activity,
   Timer,
@@ -380,49 +379,47 @@ export default function AgentLogsPage() {
               </button>
             </div>
 
-            {/* Body - Log detail table */}
+            {/* Body - Timeline log content */}
             <div className="px-6 py-5 overflow-y-auto flex-1 custom-scrollbar">
-              <div className="bg-white rounded-xl border border-[#E2E8F0] overflow-hidden">
-                <Table>
-                  <TableHeader>
-                    <TableRow className="bg-[#F8FAFC] hover:bg-[#F8FAFC] border-b border-[#E2E8F0]">
-                      <TableHead className="text-[12px] font-semibold text-[#64748B] whitespace-nowrap tracking-wider w-[60px] text-center">序号</TableHead>
-                      <TableHead className="text-[12px] font-semibold text-[#64748B] whitespace-nowrap tracking-wider">姓名</TableHead>
-                      <TableHead className="text-[12px] font-semibold text-[#64748B] whitespace-nowrap tracking-wider">请求IP</TableHead>
-                      <TableHead className="text-[12px] font-semibold text-[#64748B] whitespace-nowrap tracking-wider">操作描述</TableHead>
-                      <TableHead className="text-[12px] font-semibold text-[#64748B] whitespace-nowrap tracking-wider w-[80px] text-center">执行状态</TableHead>
-                      <TableHead className="text-[12px] font-semibold text-[#64748B] whitespace-nowrap tracking-wider w-[80px] text-center">处理时间</TableHead>
-                      <TableHead className="text-[12px] font-semibold text-[#64748B] whitespace-nowrap tracking-wider">操作时间</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {agentLogData
-                      .filter((item) => item.agentName === selectedAgent.agentName)
-                      .sort((a, b) => a.operationTime.localeCompare(b.operationTime))
-                      .map((item, idx) => (
-                        <TableRow
-                          key={item.id}
-                          className="border-b border-[#F1F5F9] transition-all duration-200 hover:bg-[#F8FAFC]"
-                        >
-                          <TableCell className="py-3 text-center">
-                            <span className="text-[13px] text-[#334155] font-medium">{idx + 1}</span>
-                          </TableCell>
-                          <TableCell className="py-3">
-                            <div className="flex items-center gap-2">
-                              <User className="w-3.5 h-3.5 text-[#8B5CF6]" />
-                              <span className="text-[13px] text-[#334155] font-medium">代理:{item.agentName}</span>
-                            </div>
-                          </TableCell>
-                          <TableCell className="py-3">
-                            <div className="flex items-center gap-1.5">
-                              <Server className="w-3 h-3 text-[#94A3B8]" />
-                              <span className="text-[12px] text-[#64748B] font-mono">{item.requestIP}</span>
-                            </div>
-                          </TableCell>
-                          <TableCell className="py-3">
-                            <span className="text-[13px] text-[#334155]">{item.operationDesc}</span>
-                          </TableCell>
-                          <TableCell className="py-3 text-center">
+              <div className="flex items-center gap-2 mb-5">
+                <div className="w-1 h-4 rounded-full bg-gradient-to-b from-[#6366F1] to-[#8B5CF6]" />
+                <h4 className="text-[14px] font-semibold text-[#111827]">操作时间线</h4>
+                <Activity className="w-3.5 h-3.5 text-[#8B5CF6] ml-0.5" />
+              </div>
+
+              <div className="pl-3 space-y-0">
+                {agentLogData
+                  .filter((item) => item.agentName === selectedAgent.agentName)
+                  .sort((a, b) => a.operationTime.localeCompare(b.operationTime))
+                  .map((item, opIdx, opArr) => (
+                    <div key={item.id} className="relative">
+                      {/* Operation group: header + sub-logs */}
+                      <div className="flex gap-4 relative">
+                        {/* Timeline line & dot */}
+                        <div className="flex flex-col items-center w-[14px] shrink-0">
+                          <div className={`w-[12px] h-[12px] rounded-full border-[2.5px] shrink-0 z-10 mt-1 ${
+                            item.status === '成功'
+                              ? 'bg-[#10B981] border-[#10B981] shadow-md shadow-emerald-200/50'
+                              : 'bg-[#EF4444] border-[#EF4444] shadow-md shadow-red-200/50'
+                          }`} />
+                          <div className="w-[2px] flex-1 bg-[#E2E8F0] mt-1" />
+                        </div>
+                        {/* Operation header */}
+                        <div className="pb-2 flex-1 min-w-0">
+                          <div className="flex items-center gap-2 flex-wrap mb-2">
+                            <span className="text-[12px] text-[#94A3B8] font-mono">
+                              <Clock className="w-3 h-3 inline -mt-0.5 mr-0.5" />
+                              {item.operationTime}
+                            </span>
+                            <span className="inline-flex items-center px-2 py-0.5 rounded-md bg-[#F1F5F9] text-[11px] text-[#64748B] font-semibold">
+                              {item.operationDesc}
+                            </span>
+                            {/* 请求IP */}
+                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-[#F0F9FF] text-[11px] text-[#0369A1] font-medium">
+                              <Server className="w-3 h-3" />
+                              {item.requestIP}
+                            </span>
+                            {/* 执行状态 */}
                             {item.status === '成功' ? (
                               <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-[#ECFDF5] text-[11px] font-semibold text-[#059669]">
                                 <CheckCircle2 className="w-3 h-3" />
@@ -434,75 +431,52 @@ export default function AgentLogsPage() {
                                 失败
                               </span>
                             )}
-                          </TableCell>
-                          <TableCell className="py-3 text-center">
-                            <div className="flex items-center justify-center gap-1">
-                              <Timer className="w-3 h-3 text-[#94A3B8]" />
-                              <span className="text-[12px] text-[#64748B]">{item.processTime}s</span>
-                            </div>
-                          </TableCell>
-                          <TableCell className="py-3">
-                            <div className="flex items-center gap-1.5">
-                              <Clock className="w-3.5 h-3.5 text-[#94A3B8]" />
-                              <span className="text-[12px] text-[#64748B]">{item.operationTime}</span>
-                            </div>
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                  </TableBody>
-                </Table>
-              </div>
-
-              {/* Timeline log content */}
-              <div className="mt-5">
-                <div className="flex items-center gap-2 mb-4">
-                  <div className="w-1 h-4 rounded-full bg-gradient-to-b from-[#6366F1] to-[#8B5CF6]" />
-                  <h4 className="text-[14px] font-semibold text-[#111827]">操作时间线</h4>
-                  <Activity className="w-3.5 h-3.5 text-[#8B5CF6] ml-0.5" />
-                </div>
-
-                <div className="pl-3 space-y-0">
-                  {agentLogData
-                    .filter((item) => item.agentName === selectedAgent.agentName)
-                    .sort((a, b) => a.operationTime.localeCompare(b.operationTime))
-                    .flatMap((item) => item.logs.map((log) => ({ ...log, status: item.status, opDesc: item.operationDesc })))
-                    .sort((a, b) => a.time.localeCompare(b.time))
-                    .map((log, idx, arr) => (
-                      <div key={idx} className="flex gap-4 relative">
-                        {/* Timeline line */}
-                        <div className="flex flex-col items-center w-[14px] shrink-0">
-                          <div className={`w-[10px] h-[10px] rounded-full border-2 shrink-0 z-10 mt-1.5 ${
-                            log.content.includes('成功') || log.status === '成功'
-                              ? 'bg-[#10B981] border-[#10B981]'
-                              : log.content.includes('失败')
-                              ? 'bg-[#EF4444] border-[#EF4444]'
-                              : 'bg-white border-[#CBD5E1]'
-                          }`} />
-                          {idx < arr.length - 1 && (
-                            <div className="w-[2px] flex-1 bg-[#E2E8F0] mt-1" />
-                          )}
-                        </div>
-                        {/* Content */}
-                        <div className={`pb-5 flex-1 min-w-0 ${idx === arr.length - 1 ? 'pb-0' : ''}`}>
-                          <div className="flex items-center gap-2 mb-1">
-                            <span className="text-[11px] text-[#94A3B8] font-mono">{log.time}</span>
-                            <span className="inline-flex items-center px-1.5 py-0.5 rounded bg-[#F1F5F9] text-[10px] text-[#64748B] font-medium">
-                              {log.opDesc}
+                            {/* 处理时间 */}
+                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-[#F5F3FF] text-[11px] text-[#6D28D9] font-medium">
+                              <Timer className="w-3 h-3" />
+                              {item.processTime}s
                             </span>
                           </div>
-                          <p className={`text-[13px] ${
-                            log.content.includes('成功')
-                              ? 'text-[#059669]'
-                              : log.content.includes('失败')
-                              ? 'text-[#DC2626]'
-                              : 'text-[#334155]'
-                          }`}>
-                            {log.content}
-                          </p>
+
+                          {/* Sub-log steps */}
+                          <div className="pl-2 space-y-0">
+                            {item.logs.map((log, logIdx, logArr) => (
+                              <div key={logIdx} className="flex gap-3 relative">
+                                {/* Sub timeline line */}
+                                <div className="flex flex-col items-center w-[14px] shrink-0">
+                                  <div className={`w-[7px] h-[7px] rounded-full border-2 shrink-0 z-10 mt-2 ${
+                                    log.content.includes('成功')
+                                      ? 'bg-[#10B981] border-[#10B981]'
+                                      : log.content.includes('失败')
+                                      ? 'bg-[#EF4444] border-[#EF4444]'
+                                      : 'bg-white border-[#CBD5E1]'
+                                  }`} />
+                                  {logIdx < logArr.length - 1 && (
+                                    <div className="w-[1.5px] flex-1 bg-[#E2E8F0] mt-0.5" />
+                                  )}
+                                </div>
+                                {/* Sub log content */}
+                                <div className={`pb-3 flex-1 min-w-0 ${logIdx === logArr.length - 1 ? 'pb-1' : ''}`}>
+                                  <div className="flex items-center gap-2 mb-0.5">
+                                    <span className="text-[10px] text-[#94A3B8] font-mono">{log.time}</span>
+                                  </div>
+                                  <p className={`text-[12px] leading-relaxed ${
+                                    log.content.includes('成功')
+                                      ? 'text-[#059669]'
+                                      : log.content.includes('失败')
+                                      ? 'text-[#DC2626]'
+                                      : 'text-[#475569]'
+                                  }`}>
+                                    {log.content}
+                                  </p>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
                         </div>
                       </div>
-                    ))}
-                </div>
+                    </div>
+                  ))}
               </div>
             </div>
 
